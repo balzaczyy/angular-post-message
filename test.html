@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+<script src="bower_components/angularjs/angular.js"></script>
+<script src="post-message.js"></script>
+<title>Test Angular Post Message API</title>
+</head>
+<body ng-controller="MainCtrl">
+<iframe ng-if="!isDead" track="1" src="https://rawgit.com/kylewelsby/585b3a5395c6731acc50/raw/f661e856adbccf39549ed7c550661f09158f8d55/index.html"></iframe>
+<br>
+<button ng-click="sendMessage(1);">Send response 1</button>
+<button ng-click="isDead = !isDead">Destroy iframe 1</button>
+<br>
+<iframe track="2" src="https://rawgit.com/kylewelsby/585b3a5395c6731acc50/raw/f661e856adbccf39549ed7c550661f09158f8d55/index.html"></iframe>
+<br>
+<button ng-click="sendMessage(2);">Send response 2</button>
+<br>
+<ol>
+  <li ng-repeat="message in messages">{{message}}</li>
+</ol>
+<script>
+var app = angular.module('app', ['ngPostMessage']);
+app.controller('MainCtrl', function($scope, postMessage) {
+  $scope.messages = [];
+
+  postMessage.frames = $scope.frames = {}; // prefer local mapper
+  postMessage.recv(function(event, data){
+    $scope.messages.push(angular.fromJson(data));
+  });
+  $scope.sendMessage = function(id) {
+    postMessage.post(id, angular.toJson({"response":"hi"}));
+  };
+});
+</script>
+</body>
+</html>
